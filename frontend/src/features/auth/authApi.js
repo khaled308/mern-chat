@@ -7,17 +7,17 @@ export const registerService = async (userData) => {
     },
   });
 
-  if (data && data.token) {
-    localStorage.setItem("token", "Bearer " + data.token);
+  if (data) {
+    localStorage.setItem("token", "Bearer " + data.user.token);
   }
   return data;
 };
 
 export const loginService = async (userData) => {
   const { data } = await axios.post("/auth/login", userData);
-
-  if (data && data.token) {
-    localStorage.setItem("token", "Bearer " + data.token);
+  console.log(data);
+  if (data) {
+    localStorage.setItem("token", "Bearer " + data.user.token);
   }
   return data;
 };
@@ -30,7 +30,10 @@ export const logoutService = async () => {
 };
 
 export const getUserService = async () => {
-  const { data } = await axios.get("/auth/user");
-
+  const { data } = await axios.get("/auth/user", {
+    headers: {
+      Authorization: localStorage.getItem("token"),
+    },
+  });
   return data;
 };
