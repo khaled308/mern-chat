@@ -5,13 +5,15 @@ import io from "socket.io-client";
 import { API_URL } from "../constants";
 import { getUser } from "../features/auth/authSlice";
 import Loader from "../components/Loader";
+import Contact from "../components/Contact";
+import Chat from "../components/Chat";
 
 export const Home = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isLoading, isError } = useSelector((state) => state.auth);
+  const { isLoading, isError, user } = useSelector((state) => state.auth);
   const socket = useRef();
-  const [onlineUsers, setOnlineUser] = useState([]);
+  const [contacts, setContacts] = useState([]);
 
   useEffect(() => {
     dispatch(getUser());
@@ -37,16 +39,20 @@ export const Home = () => {
     });
 
     socket.current.on("connectedUsers", (users) => {
-      setOnlineUser(users);
-      console.log(users);
+      if (user) setContacts(users.filter((u) => u._id !== user._id));
     });
     return () => {
       socket.current.disconnect();
     };
-  }, [navigate]);
+  }, [navigate, user]);
 
   if (isLoading) {
     return <Loader />;
   }
-  return <div className="bg-slate-300">Home</div>;
+  return (
+    <div className="flex">
+      <Contact contacts={contacts} />
+      <Chat />
+    </div>
+  );
 };

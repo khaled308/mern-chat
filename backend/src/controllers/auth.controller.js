@@ -44,5 +44,5 @@ exports.getUser = asyncErrorHandler(async (req, res) => {
   if (!user) {
     return res.status(404).json({ msg: "User not found" });
   }
-  res.status(200).json({ user });
+  res.status(200).json(user);
 });
