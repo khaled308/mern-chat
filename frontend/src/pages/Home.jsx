@@ -14,6 +14,8 @@ export const Home = () => {
   const { isLoading, isError, user } = useSelector((state) => state.auth);
   const socket = useRef();
   const [contacts, setContacts] = useState([]);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     dispatch(getUser());
@@ -41,18 +43,40 @@ export const Home = () => {
     socket.current.on("connectedUsers", (users) => {
       if (user) setContacts(users.filter((u) => u._id !== user._id));
     });
+
+    socket.current.on("message", (message) => {
+      if (message.from === selectedUserId) {
+        setMessages((messages) => [...messages, message]);
+      }
+    });
     return () => {
       socket.current.disconnect();
     };
-  }, [navigate, user]);
+  }, [navigate, selectedUserId, user]);
+
+  const sendMessage = (message) => {
+    socket.current.emit("message", {
+      to: selectedUserId,
+      content: message,
+    });
+  };
 
   if (isLoading) {
     return <Loader />;
   }
   return (
     <div className="flex">
-      <Contact contacts={contacts} />
-      <Chat />
+      <Contact
+        contacts={contacts}
+        selectedUserId={selectedUserId}
+        setSelectedUserId={setSelectedUserId}
+      />
+      <Chat
+        selectedUserId={selectedUserId}
+        sendMessage={sendMessage}
+        messages={messages}
+        setMessages={setMessages}
+      />
     </div>
   );
 };

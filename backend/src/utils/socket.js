@@ -2,6 +2,7 @@ const { Server } = require("socket.io");
 const jwt = require("jsonwebtoken");
 const AppError = require("./AppError");
 const User = require("../models/User");
+const Message = require("../models/Message");
 
 let users;
 const getUsers = async (onlineUsers, users) => {
@@ -60,6 +61,18 @@ const socketConnection = (server) => {
     });
 
     socket.broadcast.emit("connectedUsers", usersWithStatus);
+
+    socket.on("message", async (message) => {
+      await Message.create({
+        content: message.content,
+        from: socket.userId,
+        to: message.to,
+      });
+      socket.broadcast.emit("message", {
+        ...message,
+        from: socket.userId,
+      });
+    });
   });
 
   return io;

@@ -5,9 +5,9 @@ const morgan = require("morgan");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth.routes");
+const messageRoutes = require("./routes/messages.routes");
 const errorHandler = require("./middlewares/errorHandler");
 const socketConnection = require("./utils/socket");
-const User = require("./models/User");
 
 const app = express();
 const server = http.createServer(app);
@@ -21,11 +21,8 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/api/v1/", async (req, res) => {
-  const users = await User.find({}).select("username");
-  res.json(users);
-});
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/messages", messageRoutes);
 
 app.use(errorHandler);
 

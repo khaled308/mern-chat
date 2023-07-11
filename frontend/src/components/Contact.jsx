@@ -1,14 +1,11 @@
 /* eslint-disable react/prop-types */
 
-import { useState } from "react";
-
-const Contact = ({ contacts }) => {
-  const [selectedUser, setSelectedUser] = useState(null);
+const Contact = ({ contacts, selectedUserId, setSelectedUserId }) => {
   const handleContactClick = (contactId) => {
-    if (contactId === selectedUser) {
-      setSelectedUser(null);
+    if (contactId === selectedUserId) {
+      setSelectedUserId(null);
     } else {
-      setSelectedUser(contactId);
+      setSelectedUserId(contactId);
     }
     console.log(`Clicked contact with ID: ${contactId}`);
   };
@@ -19,7 +16,7 @@ const Contact = ({ contacts }) => {
         <div
           key={contact._id}
           className={`flex flex-row gap-2 items-center p-2 cursor-pointer transition duration-300 ${
-            contact._id === selectedUser
+            contact._id === selectedUserId
               ? "bg-blue-300"
               : "bg-blue-200 hover:bg-blue-300"
           }`}
